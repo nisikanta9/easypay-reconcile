@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" role="img" aria-label="EasyPay">
+  <circle cx="120" cy="120" r="104" fill="#5A23A8"/>
+  <rect x="74" y="61" width="92" height="119" rx="13" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+  <path d="M96 91h48M96 117h48M96 143h23" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="186" cy="182" r="34" fill="#22C55E" stroke="#FFFFFF" stroke-width="7"/>
+  <path d="M170 182l11 11 21-23" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="148" fill="#2A1052" font-family="'DM Sans', Arial, sans-serif" font-weight="700" font-size="112" letter-spacing="-2">EasyPay</text>
+  <text x="262" y="196" fill="#5A23A8" font-family="'DM Sans', Arial, sans-serif" font-weight="700" font-size="32" letter-spacing="4">EVERY RUPEE, ACCOUNTED FOR</text>
+</svg>
