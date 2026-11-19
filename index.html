@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyPay Support Dashboard | Real-Time Triage</title>
+  <style>
+    :root {
+      --primary: #5A23A8;
+      --primary-dark: #2A1052;
+      --primary-light: #F4EEFB;
+      --accent-green: #22C55E;
+      --accent-green-light: #DCFCE7;
+      --accent-red: #EF4444;
+      --accent-red-light: #FEE2E2;
+      --accent-amber: #F59E0B;
+      --accent-amber-light: #FEF3C7;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-500: #6B7280;
+      --gray-800: #1F2937;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.5;
+      padding-bottom: 50px;
+    }
+
+    /* Training Banner */
+    .training-badge-bar {
+      background: var(--primary-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .training-badge-bar span {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    /* Header */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .header-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-img {
+      height: 48px;
+      width: auto;
+    }
+    .header-subtext {
+      color: var(--gray-500);
+      font-size: 0.9rem;
+    }
+    .latency-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-green-light);
+      color: #15803D;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+    .latency-pill .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+    }
+
+    /* Container */
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 900px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .kpi-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      line-height: 1.2;
+    }
+    .kpi-card.highlight {
+      border-left: 4px solid var(--primary);
+      background: linear-gradient(135deg, var(--white) 0%, var(--primary-light) 100%);
+    }
+    .kpi-card.clean {
+      border-left: 4px solid var(--accent-green);
+    }
+    .kpi-card.alert {
+      border-left: 4px solid var(--accent-red);
+    }
+
+    /* Shop Breakdown Section */
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    @media (min-width: 640px) {
+      .shop-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .shop-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .shop-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .shop-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .shop-name {
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .shop-issue {
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .shop-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+    .shop-stat strong {
+      color: var(--primary-dark);
+    }
+
+    /* Filter Toolbar */
+    .toolbar {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    @media (min-width: 768px) {
+      .toolbar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .btn-filter {
+      background: var(--gray-100);
+      color: var(--gray-800);
+      border: 1px solid transparent;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-filter:hover {
+      background: var(--gray-200);
+    }
+    .btn-filter.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .search-input {
+      padding: 8px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      min-width: 220px;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Table / Card View */
+    .table-container {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    th {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--gray-200);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+    tr:hover td {
+      background-color: var(--gray-50);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-clean { background: var(--accent-green-light); color: #15803D; }
+    .badge-duplicate { background: #EDE9FE; color: var(--primary); }
+    .badge-failed { background: var(--accent-red-light); color: #B91C1C; }
+    .badge-pending { background: var(--accent-amber-light); color: #B45309; }
+    .badge-short { background: #E0E7FF; color: #4338CA; }
+
+    .action-text {
+      font-size: 0.84rem;
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+
+    /* Mobile Cards View (displayed below 768px for readability) */
+    .mobile-cards {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    @media (max-width: 768px) {
+      .table-container {
+        display: none;
+      }
+      .mobile-cards {
+        display: flex;
+      }
+    }
+    .tx-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .tx-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .tx-card-utr {
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    .tx-card-meta {
+      font-size: 0.82rem;
+      color: var(--gray-500);
+      margin-bottom: 10px;
+    }
+    .tx-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.86rem;
+    }
+    .tx-card-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .tx-card-action {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: var(--primary-light);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--gray-500);
+      font-size: 0.82rem;
+    }
+    footer strong {
+      color: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Banner -->
+  <div class="training-badge-bar">
+    Fictional training project. <span>EasyPay Ops Engineering</span>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-wrap">
+        <img src="easypay-logo.svg" alt="EasyPay Logo" class="logo-img">
+        <div>
+          <h1 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark);">Support Triage Dashboard</h1>
+          <p class="header-subtext">Real-time payment verification & dispute prevention</p>
+        </div>
+      </div>
+      <div class="latency-pill">
+        <span class="pulse-dot"></span>
+        <span id="speed-label">Engine Latency: 1.39 ms</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- KPI Summary Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card highlight">
+        <div class="kpi-title">Unresolved INR</div>
+        <div class="kpi-value" id="kpi-unresolved">₹3,375.00</div>
+        <div style="font-size: 0.75rem; color: var(--primary); margin-top: 4px;">Debited with no credit/refund</div>
+      </div>
+      <div class="kpi-card alert">
+        <div class="kpi-title">Actionable Alerts</div>
+        <div class="kpi-value" id="kpi-alerts">16</div>
+        <div style="font-size: 0.75rem; color: var(--accent-red); margin-top: 4px;">Requires support intervention</div>
+      </div>
+      <div class="kpi-card clean">
+        <div class="kpi-title">Clean Payments</div>
+        <div class="kpi-value" id="kpi-clean">32</div>
+        <div style="font-size: 0.75rem; color: var(--accent-green); margin-top: 4px;">66.7% zero mismatch</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Total Orders</div>
+        <div class="kpi-value" id="kpi-total">48</div>
+        <div style="font-size: 0.75rem; color: var(--gray-500); margin-top: 4px;">Oct 20 & 21 Batch</div>
+      </div>
+    </div>
+
+    <!-- Shop Anomaly Breakdown -->
+    <h2 class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      Merchant Anomaly Profiles
+    </h2>
+    <div class="shop-grid" id="shop-container">
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- Toolbar: Filters & Search -->
+    <div class="toolbar">
+      <div class="filter-buttons">
+        <button class="btn-filter active" data-filter="alerts">Flagged Alerts (16)</button>
+        <button class="btn-filter" data-filter="all">All (48)</button>
+        <button class="btn-filter" data-filter="Duplicate debit">Duplicate Debit (4)</button>
+        <button class="btn-filter" data-filter="Debited but shown failed">Silent Debit (4)</button>
+        <button class="btn-filter" data-filter="Still pending">Pending (4)</button>
+        <button class="btn-filter" data-filter="Amount mismatch">Short Credit (4)</button>
+        <button class="btn-filter" data-filter="Clean">Clean (32)</button>
+      </div>
+      <input type="text" id="search-box" class="search-input" placeholder="Search by UTR or Shop...">
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Paid At</th>
+            <th>UTR</th>
+            <th>Shop</th>
+            <th>Amount</th>
+            <th>App Status</th>
+            <th>Cause / Classification</th>
+            <th>Unresolved INR</th>
+            <th>What Support Does Next</th>
+          </tr>
+        </thead>
+        <tbody id="tx-tbody">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards" id="tx-cards">
+      <!-- Populated via JS for small screens -->
+    </div>
+  </main>
+
+  <footer>
+    <p><strong>EasyPay Missing-Rupee Triage System</strong> • Fictional training project.</p>
+    <p style="margin-top: 4px;">Engineered for Kavya's Forward Deployed Engineering Capstone • 100 Feet Road, Indiranagar</p>
+  </footer>
+
+  <script>
+    // Embedded sample fallback dataset guaranteeing offline and file:// execution
+    const EMBEDDED_TX_CSV = `utr,paid_at,shop,customer_upi,amount_inr,app_status
+626102000001,2026-10-20 09:10,Kagada Corner,a***@okbank,357.00,SUCCESS
+626102000002,2026-10-20 09:40,Bili Cup Kitchen,b***@okbank,180.00,FAILED
+626102000003,2026-10-20 10:10,Gundu Craft Stall,c***@okbank,431.00,SUCCESS
+626102000004,2026-10-20 10:40,Tara Thread Nook,d***@okbank,468.00,FAILED
+626102000005,2026-10-20 11:10,Kagada Corner,e***@okbank,350.00,PENDING
+626102000006,2026-10-20 11:40,Bili Cup Kitchen,f***@okbank,542.00,SUCCESS
+626102000007,2026-10-20 12:10,Gundu Craft Stall,g***@okbank,579.00,SUCCESS
+626102000008,2026-10-20 12:40,Tara Thread Nook,h***@okbank,220.00,SUCCESS
+626102000009,2026-10-20 13:10,Kagada Corner,i***@okbank,653.00,SUCCESS
+626102000010,2026-10-20 13:40,Bili Cup Kitchen,j***@okbank,690.00,SUCCESS
+626102000011,2026-10-20 14:10,Gundu Craft Stall,k***@okbank,460.00,SUCCESS
+626102000012,2026-10-20 14:40,Tara Thread Nook,l***@okbank,764.00,FAILED
+626102000013,2026-10-20 15:10,Kagada Corner,m***@okbank,801.00,SUCCESS
+626102000014,2026-10-20 15:40,Bili Cup Kitchen,n***@okbank,640.00,FAILED
+626102000015,2026-10-20 16:10,Gundu Craft Stall,o***@okbank,875.00,SUCCESS
+626102000016,2026-10-20 16:40,Tara Thread Nook,p***@okbank,112.00,SUCCESS
+626102000017,2026-10-20 17:10,Kagada Corner,q***@okbank,125.00,PENDING
+626102000018,2026-10-20 17:40,Bili Cup Kitchen,r***@okbank,186.00,SUCCESS
+626102000019,2026-10-20 18:10,Gundu Craft Stall,s***@okbank,223.00,SUCCESS
+626102000020,2026-10-20 18:40,Tara Thread Nook,t***@okbank,90.00,SUCCESS
+626102000021,2026-10-20 19:10,Kagada Corner,u***@okbank,297.00,SUCCESS
+626102000022,2026-10-20 19:40,Bili Cup Kitchen,v***@okbank,334.00,SUCCESS
+626102000023,2026-10-20 20:10,Gundu Craft Stall,w***@okbank,800.00,SUCCESS
+626102000024,2026-10-20 20:40,Tara Thread Nook,x***@okbank,408.00,FAILED
+626102100001,2026-10-21 09:10,Kagada Corner,a***@okbank,368.00,SUCCESS
+626102100002,2026-10-21 09:40,Bili Cup Kitchen,b***@okbank,275.00,FAILED
+626102100003,2026-10-21 10:10,Gundu Craft Stall,c***@okbank,442.00,SUCCESS
+626102100004,2026-10-21 10:40,Tara Thread Nook,d***@okbank,479.00,FAILED
+626102100005,2026-10-21 11:10,Kagada Corner,e***@okbank,410.00,PENDING
+626102100006,2026-10-21 11:40,Bili Cup Kitchen,f***@okbank,553.00,SUCCESS
+626102100007,2026-10-21 12:10,Gundu Craft Stall,g***@okbank,590.00,SUCCESS
+626102100008,2026-10-21 12:40,Tara Thread Nook,h***@okbank,150.00,SUCCESS
+626102100009,2026-10-21 13:10,Kagada Corner,i***@okbank,664.00,SUCCESS
+626102100010,2026-10-21 13:40,Bili Cup Kitchen,j***@okbank,701.00,SUCCESS
+626102100011,2026-10-21 14:10,Gundu Craft Stall,k***@okbank,600.00,SUCCESS
+626102100012,2026-10-21 14:40,Tara Thread Nook,l***@okbank,775.00,FAILED
+626102100013,2026-10-21 15:10,Kagada Corner,m***@okbank,812.00,SUCCESS
+626102100014,2026-10-21 15:40,Bili Cup Kitchen,n***@okbank,390.00,FAILED
+626102100015,2026-10-21 16:10,Gundu Craft Stall,o***@okbank,886.00,SUCCESS
+626102100016,2026-10-21 16:40,Tara Thread Nook,p***@okbank,123.00,SUCCESS
+626102100017,2026-10-21 17:10,Kagada Corner,q***@okbank,240.00,PENDING
+626102100018,2026-10-21 17:40,Bili Cup Kitchen,r***@okbank,197.00,SUCCESS
+626102100019,2026-10-21 18:10,Gundu Craft Stall,s***@okbank,234.00,SUCCESS
+626102100020,2026-10-21 18:40,Tara Thread Nook,t***@okbank,320.00,SUCCESS
+626102100021,2026-10-21 19:10,Kagada Corner,u***@okbank,308.00,SUCCESS
+626102100022,2026-10-21 19:40,Bili Cup Kitchen,v***@okbank,345.00,SUCCESS
+626102100023,2026-10-21 20:10,Gundu Craft Stall,w***@okbank,1200.00,SUCCESS
+626102100024,2026-10-21 20:40,Tara Thread Nook,x***@okbank,419.00,FAILED`;
+
+    const EMBEDDED_BANK_CSV = `utr,debit_count,debited_inr,credited_inr,reversed_inr
+626102000001,1,357.00,357.00,0.00
+626102000002,1,180.00,0.00,0.00
+626102000003,1,431.00,431.00,0.00
+626102000004,0,0.00,0.00,0.00
+626102000005,1,350.00,0.00,0.00
+626102000006,1,542.00,542.00,0.00
+626102000007,1,579.00,579.00,0.00
+626102000008,2,440.00,220.00,0.00
+626102000009,1,653.00,653.00,0.00
+626102000010,1,690.00,690.00,0.00
+626102000011,1,460.00,400.00,0.00
+626102000012,0,0.00,0.00,0.00
+626102000013,1,801.00,801.00,0.00
+626102000014,1,640.00,0.00,0.00
+626102000015,1,875.00,875.00,0.00
+626102000016,1,112.00,112.00,0.00
+626102000017,0,0.00,0.00,0.00
+626102000018,1,186.00,186.00,0.00
+626102000019,1,223.00,223.00,0.00
+626102000020,2,180.00,90.00,0.00
+626102000021,1,297.00,297.00,0.00
+626102000022,1,334.00,334.00,0.00
+626102000023,1,800.00,760.00,0.00
+626102000024,1,408.00,0.00,408.00
+626102100001,1,368.00,368.00,0.00
+626102100002,1,275.00,0.00,0.00
+626102100003,1,442.00,442.00,0.00
+626102100004,0,0.00,0.00,0.00
+626102100005,1,410.00,0.00,0.00
+626102100006,1,553.00,553.00,0.00
+626102100007,1,590.00,590.00,0.00
+626102100008,2,300.00,150.00,0.00
+626102100009,1,664.00,664.00,0.00
+626102100010,1,701.00,701.00,0.00
+626102100011,1,600.00,500.00,0.00
+626102100012,0,0.00,0.00,0.00
+626102100013,1,812.00,812.00,0.00
+626102100014,1,390.00,0.00,0.00
+626102100015,1,886.00,886.00,0.00
+626102100016,1,123.00,123.00,0.00
+626102100017,0,0.00,0.00,0.00
+626102100018,1,197.00,197.00,0.00
+626102100019,1,234.00,234.00,0.00
+626102100020,2,640.00,320.00,0.00
+626102100021,1,308.00,308.00,0.00
+626102100022,1,345.00,345.00,0.00
+626102100023,1,1200.00,1050.00,0.00
+626102100024,1,419.00,0.00,419.00`;
+
+    // Simple robust CSV Parser
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      const headers = lines[0].split(',').map(h => h.trim());
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const vals = lines[i].split(',').map(v => v.trim());
+        const row = {};
+        headers.forEach((h, idx) => row[h] = vals[idx]);
+        data.push(row);
+      }
+      return data;
+    }
+
+    let allReconciled = [];
+    let currentFilter = 'alerts';
+
+    async function loadData() {
+      const t0 = performance.now();
+      let txRaw, bkRaw;
+
+      try {
+        const [r1, r2] = await Promise.all([
+          fetch('easypay_transactions.csv'),
+          fetch('bank_settlements.csv')
+        ]);
+        if (r1.ok && r2.ok) {
+          txRaw = await r1.text();
+          bkRaw = await r2.text();
+        } else {
+          throw new Error("HTTP Fetch failed");
+        }
+      } catch (e) {
+        console.warn("Using embedded CSV dataset fallback (file:// protocol compatibility)");
+        txRaw = EMBEDDED_TX_CSV;
+        bkRaw = EMBEDDED_BANK_CSV;
+      }
+
+      const transactions = parseCSV(txRaw);
+      const settlements = parseCSV(bkRaw);
+
+      // Create settlement map
+      const bankMap = new Map();
+      settlements.forEach(b => {
+        bankMap.set(b.utr, {
+          debit_count: parseInt(b.debit_count, 10),
+          debited_inr: parseFloat(b.debited_inr),
+          credited_inr: parseFloat(b.credited_inr),
+          reversed_inr: parseFloat(b.reversed_inr)
+        });
+      });
+
+      // Strict Priority Reconciliation Engine (Matching Python)
+      allReconciled = [];
+      let totalUnresolved = 0;
+      let cleanCount = 0;
+      let alertCount = 0;
+      const shopStats = {};
+
+      transactions.forEach(t => {
+        const utr = t.utr;
+        const b = bankMap.get(utr);
+        const amount = parseFloat(t.amount_inr);
+        const status = t.app_status;
+        const debited = b.debited_inr;
+        const credited = b.credited_inr;
+        const reversed = b.reversed_inr;
+        const debitCount = b.debit_count;
+
+        let cause = 'Clean';
+        let unresolved = 0;
+        let action = 'No action needed.';
+        let isFlagged = false;
+
+        // Priority 1: Duplicate debit
+        if (debitCount > 1 && (debited - credited - reversed) > 0) {
+          cause = 'Duplicate debit';
+          unresolved = debited - credited - reversed;
+          action = 'Support asks the bank to trace the extra debit and reversal.';
+          isFlagged = true;
+        }
+        // Priority 2: Debited but shown failed
+        else if (status === 'FAILED' && debited > 0 && credited === 0 && (debited - reversed) > 0) {
+          cause = 'Debited but shown failed';
+          unresolved = debited - reversed;
+          action = 'Support asks the bank to trace the outstanding reversal.';
+          isFlagged = true;
+        }
+        // Priority 3: Still pending
+        else if (status === 'PENDING' && credited === 0 && reversed === 0) {
+          cause = 'Still pending';
+          unresolved = Math.max(0, debited - reversed);
+          action = 'Support asks for final status and avoids requesting another payment.';
+          isFlagged = true;
+        }
+        // Priority 4: Amount mismatch
+        else if (status === 'SUCCESS' && debitCount === 1 && debited === amount && credited < amount) {
+          cause = 'Amount mismatch';
+          unresolved = amount - credited;
+          action = 'Support asks the bank to trace the short credit.';
+          isFlagged = true;
+        }
+        // Clean Cases
+        else {
+          cleanCount++;
+        }
+
+        if (isFlagged) {
+          alertCount++;
+          totalUnresolved += unresolved;
+
+          // Track shop breakdown
+          if (!shopStats[t.shop]) {
+            shopStats[t.shop] = { count: 0, unresolved: 0, cause: cause };
+          }
+          shopStats[t.shop].count++;
+          shopStats[t.shop].unresolved += unresolved;
+        }
+
+        allReconciled.push({
+          utr: utr,
+          paid_at: t.paid_at,
+          shop: t.shop,
+          amount: amount,
+          app_status: status,
+          cause: cause,
+          unresolved_inr: unresolved,
+          action: action,
+          isFlagged: isFlagged
+        });
+      });
+
+      const t1 = performance.now();
+      const elapsed = (t1 - t0).toFixed(2);
+      document.getElementById('speed-label').textContent = `Engine Latency: ${elapsed} ms`;
+
+      // Update KPI Cards
+      document.getElementById('kpi-unresolved').textContent = `₹${totalUnresolved.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-alerts').textContent = alertCount;
+      document.getElementById('kpi-clean').textContent = cleanCount;
+      document.getElementById('kpi-total').textContent = transactions.length;
+
+      // Render Shop Profiles
+      renderShopProfiles(shopStats);
+
+      // Render Table & Cards
+      renderViews();
+    }
+
+    function renderShopProfiles(shopStats) {
+      const container = document.getElementById('shop-container');
+      container.innerHTML = '';
+
+      const badgeStyles = {
+        'Debited but shown failed': { bg: '#FEE2E2', col: '#B91C1C' },
+        'Duplicate debit': { bg: '#EDE9FE', col: '#5A23A8' },
+        'Still pending': { bg: '#FEF3C7', col: '#B45309' },
+        'Amount mismatch': { bg: '#E0E7FF', col: '#4338CA' }
+      };
+
+      for (const [shop, data] of Object.entries(shopStats)) {
+        const style = badgeStyles[data.cause] || { bg: '#F3F4F6', col: '#374151' };
+        const card = document.createElement('div');
+        card.className = 'shop-card';
+        card.innerHTML = `
+          <div class="shop-name">${shop}</div>
+          <span class="shop-issue" style="background: ${style.bg}; color: ${style.col};">${data.cause}</span>
+          <div class="shop-stat">
+            <span>Alerts: <strong>${data.count}</strong></span>
+            <span>Unresolved: <strong>₹${data.unresolved.toFixed(2)}</strong></span>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          document.getElementById('search-box').value = shop;
+          renderViews();
+        });
+        container.appendChild(card);
+      }
+    }
+
+    function getBadgeClass(cause) {
+      switch(cause) {
+        case 'Duplicate debit': return 'badge-duplicate';
+        case 'Debited but shown failed': return 'badge-failed';
+        case 'Still pending': return 'badge-pending';
+        case 'Amount mismatch': return 'badge-short';
+        default: return 'badge-clean';
+      }
+    }
+
+    function renderViews() {
+      const tbody = document.getElementById('tx-tbody');
+      const cardContainer = document.getElementById('tx-cards');
+      const searchTerm = document.getElementById('search-box').value.toLowerCase().trim();
+
+      tbody.innerHTML = '';
+      cardContainer.innerHTML = '';
+
+      const filtered = allReconciled.filter(item => {
+        // Category Filter
+        let matchesCategory = true;
+        if (currentFilter === 'alerts') {
+          matchesCategory = item.isFlagged;
+        } else if (currentFilter === 'all') {
+          matchesCategory = true;
+        } else {
+          matchesCategory = item.cause === currentFilter;
+        }
+
+        // Search Filter
+        let matchesSearch = true;
+        if (searchTerm) {
+          matchesSearch = item.utr.toLowerCase().includes(searchTerm) || 
+                          item.shop.toLowerCase().includes(searchTerm);
+        }
+
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-500); padding: 24px;">No transactions match the selected filter.</td></tr>`;
+        cardContainer.innerHTML = `<div style="text-align: center; color: var(--gray-500); padding: 24px;">No transactions match the selected filter.</div>`;
+        return;
+      }
+
+      filtered.forEach(tx => {
+        const badgeClass = getBadgeClass(tx.cause);
+        const unresolvedText = tx.unresolved_inr > 0 ? `₹${tx.unresolved_inr.toFixed(2)}` : '₹0.00';
+
+        // Table Row (Desktop)
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="white-space: nowrap;">${tx.paid_at}</td>
+          <td style="font-family: monospace; font-weight: 700; color: var(--primary-dark);">${tx.utr}</td>
+          <td>${tx.shop}</td>
+          <td style="font-weight: 600;">₹${tx.amount.toFixed(2)}</td>
+          <td><span style="font-weight: 700; font-size: 0.78rem;">${tx.app_status}</span></td>
+          <td><span class="badge ${badgeClass}">${tx.cause}</span></td>
+          <td style="font-weight: 700; color: ${tx.unresolved_inr > 0 ? 'var(--accent-red)' : 'var(--gray-500)'};">${unresolvedText}</td>
+          <td class="action-text">${tx.action}</td>
+        `;
+        tbody.appendChild(tr);
+
+        // Mobile Card (Phone View)
+        const card = document.createElement('div');
+        card.className = 'tx-card';
+        card.innerHTML = `
+          <div class="tx-card-header">
+            <div>
+              <div class="tx-card-utr">${tx.utr}</div>
+              <div class="tx-card-meta">${tx.paid_at} • ${tx.shop}</div>
+            </div>
+            <span class="badge ${badgeClass}">${tx.cause}</span>
+          </div>
+          <div class="tx-card-body">
+            <div class="tx-card-row">
+              <span style="color: var(--gray-500);">Bill Amount:</span>
+              <strong>₹${tx.amount.toFixed(2)} (${tx.app_status})</strong>
+            </div>
+            <div class="tx-card-row">
+              <span style="color: var(--gray-500);">Unresolved INR:</span>
+              <strong style="color: ${tx.unresolved_inr > 0 ? 'var(--accent-red)' : 'var(--accent-green)'};">${unresolvedText}</strong>
+            </div>
+          </div>
+          <div class="tx-card-action">
+            👉 ${tx.action}
+          </div>
+        `;
+        cardContainer.appendChild(card);
+      });
+    }
+
+    // Filter Button Clicks
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        renderViews();
+      });
+    });
+
+    // Search Input
+    document.getElementById('search-box').addEventListener('input', () => {
+      renderViews();
+    });
+
+    // Run on Load
+    window.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
